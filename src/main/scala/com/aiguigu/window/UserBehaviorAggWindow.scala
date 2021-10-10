@@ -20,6 +20,12 @@ import org.apache.flink.util.Collector
 
 import scala.collection.mutable.ListBuffer
 
+case class UserItemBehavior(userItemId: String, catId: Long, behavType: String, ts: Long)
+
+case class UserItemViewCount(userItemId: String, windowEnd: Long, likeScore: Long)
+
+case class UserItemHeat(userId: String, itemId: String, likeScore: Long)
+
 object UserBehaviorAggWindow {
   def main(args: Array[String]): Unit = {
     // 创建流处理的执行环境
@@ -58,9 +64,6 @@ object UserBehaviorAggWindow {
   }
 
 }
-case class UserItemBehavior(userItemId: String, catId: Long, behavType: String, ts: Long)
-
-case class UserItemViewCount(userItemId: String, windowEnd: Long, likeScore: Long)
 
 // COUNT统计的聚合函数实现，每出现一条记录就加一
 class UserBehaviorItemHeatAgg extends AggregateFunction[UserItemBehavior, Long, Long] {
@@ -163,5 +166,3 @@ class TopNHotItemsByUser(topSize: Int) extends KeyedProcessFunction[Tuple, UserI
     out.collect(result.toString)
   }
 }
-
-case class UserItemHeat(userId: String, itemId: String, likeScore: Long)
