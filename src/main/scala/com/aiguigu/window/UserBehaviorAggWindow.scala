@@ -49,7 +49,7 @@ object UserBehaviorAggWindow {
 
     val aggStream = dataStream
       .keyBy("userItemId")
-      .timeWindow(Time.days(1), Time.minutes(5))
+      .timeWindow(Time.days(1), Time.hours(1))
       .aggregate(new UserBehaviorItemHeatAgg, new UserItemWindowResult)
 
     val resultStream = aggStream
