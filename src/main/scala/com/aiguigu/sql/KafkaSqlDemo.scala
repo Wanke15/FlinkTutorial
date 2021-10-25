@@ -33,20 +33,16 @@ object KafkaSqlDemo {
         )
         .createTemporaryTable("user_behavior")
 
-    val countTable: Table = tableEnv.sqlQuery(
-      """
-        |SELECT user_id, query, count(1) AS cnt FROM user_behavior GROUP BY user_id, query
-        |""".stripMargin)
-
-    tableEnv.createTemporaryView("query_count", countTable)
-
 
     val resultTable: Table = tableEnv.sqlQuery("""
       |SELECT query, cnt, row_num
       |FROM
       |(
       |   SELECT user_id, query, cnt, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY cnt desc) AS row_num
-      |   FROM query_count
+      |   FROM
+      |   (
+      |     SELECT user_id, query, count(1) AS cnt FROM user_behavior GROUP BY user_id, query
+      |   )
       |)
       |WHERE row_num <= 3
       |""".stripMargin
